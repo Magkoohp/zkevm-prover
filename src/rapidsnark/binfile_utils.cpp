@@ -185,6 +185,11 @@ namespace BinFileUtils
         return sections[sectionId][sectionPos].size;
     }
 
+    bool BinFile::sectionExists(u_int32_t sectionId) {
+        return sections.find(sectionId) != sections.end();
+    }
+
+
     u_int32_t BinFile::readU32LE()
     {
         u_int32_t res = *((u_int32_t *)((u_int64_t)addr + pos));
