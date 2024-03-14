@@ -11,8 +11,8 @@
 #include "main_sm/fork_8/main_exec_generated/main_exec_generated.hpp"
 #include "main_sm/fork_8/main_exec_generated/main_exec_generated_fast.hpp"
 #include "main_sm/fork_8/main_exec_c/main_exec_c.hpp"
-#include "main_sm/fork_9/main_exec_generated/main_exec_generated.hpp"
-#include "main_sm/fork_9/main_exec_generated/main_exec_generated_fast.hpp"
+// #include "main_sm/fork_9/main_exec_generated/main_exec_generated.hpp"
+// #include "main_sm/fork_9/main_exec_generated/main_exec_generated_fast.hpp"
 #include "timer.hpp"
 #include "zklog.hpp"
 

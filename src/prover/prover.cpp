@@ -734,7 +734,7 @@ void Prover::genBatchProof (ProverRequest *pProverRequest)
         TimerStopAndLog(STARK_JSON_GENERATION_BATCH_PROOF_C12A);
 
         CommitPolsStarks cmPolsRecursive1(pAddress, (1 << starkBatchRecursive1->starkInfo.starkStruct.nBits), starkBatchRecursive1->starkInfo.nCm1);
-        CircomRecursive1::getCommitedPols(&cmPolsRecursive1, config.recursive1Verifier, config.recursive1Exec, zkinC12a, (1 << starkBatchRecursive1->starkInfo.starkStruct.nBits), starkBatchRecursive1->starkInfo.nCm1);
+        CircomRecursive1::getCommitedPols(&cmPolsRecursive1, config.recursive1Circuit, config.recursive1Exec, zkinC12a, (1 << starkBatchRecursive1->starkInfo.starkStruct.nBits), starkBatchRecursive1->starkInfo.nCm1);
 
         // void *pointerCmRecursive1Pols = mapFile("config/recursive1/recursive1.commit", cmPolsRecursive1.size(), true);
         // memcpy(pointerCmRecursive1Pols, cmPolsRecursive1.address(), cmPolsRecursive1.size());
@@ -1010,7 +1010,7 @@ void Prover::genBlobInnerProof (ProverRequest *pProverRequest){
         TimerStopAndLog(STARK_JSON_GENERATION_BLOB_INNER_PROOF_COMPRESSOR);
 
         CommitPolsStarks cmPolsRecursive1(pAddress, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
-        CircomBlobInnerCompressor::getCommitedPols(&cmPolsRecursive1, config.blobInnerRecursive1Verifier, config.blobInnerRecursive1Exec, zkinCompressor, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
+        CircomBlobInnerRecursive1::getCommitedPols(&cmPolsRecursive1, config.blobInnerRecursive1Circuit, config.blobInnerRecursive1Exec, zkinCompressor, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
 
         // void *pointerCmRecursive1Pols = mapFile("config/blob_inner_recursive1/blob_inner_recursive1.commit", cmPolsRecursive1.size(), true);
         // memcpy(pointerCmRecursive1Pols, cmPolsRecursive1.address(), cmPolsRecursive1.size());
@@ -1101,7 +1101,7 @@ void Prover::genBlobOuterProof (ProverRequest *pProverRequest){
     }
 
     CommitPolsStarks cmPolsBlobOuter(pAddress, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
-    CircomBlobOuter::getCommitedPols(&cmPolsBlobOuter, config.blobOuterVerifier, config.blobOuterExec, zkinInputBlobOuter, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
+    CircomBlobOuter::getCommitedPols(&cmPolsBlobOuter, config.blobOuterCircuit, config.blobOuterExec, zkinInputBlobOuter, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
 
     // void *pointerCmBlobOuterPols = mapFile("config/blob_outer/blob_outer.commit", cmPolsBlobOuter.size(), true);
     // memcpy(pointerCmBlobOuterPols, cmPolsBlobOuter.address(), cmPolsBlobOuter.size());
@@ -1248,7 +1248,7 @@ void Prover::genAggregatedBatchProof (ProverRequest *pProverRequest)
     }
 
     CommitPolsStarks cmPolsRecursive2(pAddress, (1 << starkBatchRecursive2->starkInfo.starkStruct.nBits), starkBatchRecursive2->starkInfo.nCm1);
-    CircomRecursive2::getCommitedPols(&cmPolsRecursive2, config.recursive2Verifier, config.recursive2Exec, zkinInputRecursive2, (1 << starkBatchRecursive2->starkInfo.starkStruct.nBits), starkBatchRecursive2->starkInfo.nCm1);
+    CircomRecursive2::getCommitedPols(&cmPolsRecursive2, config.recursive2Circuit, config.recursive2Exec, zkinInputRecursive2, (1 << starkBatchRecursive2->starkInfo.starkStruct.nBits), starkBatchRecursive2->starkInfo.nCm1);
 
     // void *pointerCmRecursive2Pols = mapFile("config/recursive2/recursive2.commit", cmPolsRecursive2.size(), true);
     // memcpy(pointerCmRecursive2Pols, cmPolsRecursive2.address(), cmPolsRecursive2.size());
@@ -1492,7 +1492,7 @@ void Prover::genFinalProof (ProverRequest *pProverRequest)
     }
 
     CommitPolsStarks cmPolsRecursiveF(pAddressStarksRecursiveF, (1 << starksRecursiveF->starkInfo.starkStruct.nBits), starksRecursiveF->starkInfo.nCm1);
-    CircomRecursiveF::getCommitedPols(&cmPolsRecursiveF, config.recursivefVerifier, config.recursivefExec, zkinFinal, (1 << starksRecursiveF->starkInfo.starkStruct.nBits), starksRecursiveF->starkInfo.nCm1);
+    CircomRecursiveF::getCommitedPols(&cmPolsRecursiveF, config.recursivefCircuit, config.recursivefExec, zkinFinal, (1 << starksRecursiveF->starkInfo.starkStruct.nBits), starksRecursiveF->starkInfo.nCm1);
 
     // void *pointercmPolsRecursiveF = mapFile("config/recursivef/recursivef.commit", cmPolsRecursiveF.size(), true);
     // memcpy(pointercmPolsRecursiveF, cmPolsRecursiveF.address(), cmPolsRecursiveF.size());
@@ -1524,11 +1524,11 @@ void Prover::genFinalProof (ProverRequest *pProverRequest)
     }
 
     //  ----------------------------------------------
-    //  Verifier final
+    //  Final proof
     //  ----------------------------------------------
 
     TimerStart(CIRCOM_LOAD_CIRCUIT_FINAL);
-    CircomFinal::Circom_Circuit *circuitFinal = CircomFinal::loadCircuit(config.finalVerifier);
+    CircomFinal::Circom_Circuit *circuitFinal = CircomFinal::loadCircuit(config.finalCircuit);
     TimerStopAndLog(CIRCOM_LOAD_CIRCUIT_FINAL);
 
     TimerStart(CIRCOM_FINAL_LOAD_JSON);
