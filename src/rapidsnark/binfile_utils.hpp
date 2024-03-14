@@ -47,6 +47,8 @@ namespace BinFileUtils
 
         bool sectionExists(u_int32_t sectionId);
 
+        u_int8_t  readU8LE();
+        u_int16_t readU16LE();
         u_int32_t readU32LE();
         u_int64_t readU64LE();
 

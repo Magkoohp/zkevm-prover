@@ -111,24 +111,24 @@ void runFileGenBatchProof(Goldilocks fr, Prover &prover, Config &config)
     prover.genBatchProof(&proverRequest);
 }
 
-void runFileGenAggregatedProof(Goldilocks fr, Prover &prover, Config &config)
+void runFileGenAggregatedBatchProof(Goldilocks fr, Prover &prover, Config &config)
 {
     // Load and parse input JSON file
     TimerStart(INPUT_LOAD);
     // Create and init an empty prover request
-    ProverRequest proverRequest(fr, config, prt_genAggregatedProof);
+    ProverRequest proverRequest(fr, config, prt_genAggregatedBatchProof);
     if (config.inputFile.size() > 0)
     {
-        file2json(config.inputFile, proverRequest.aggregatedProofInput1);
+        file2json(config.inputFile, proverRequest.aggregatedBatchProofInput1);
     }
     if (config.inputFile2.size() > 0)
     {
-        file2json(config.inputFile2, proverRequest.aggregatedProofInput2);
+        file2json(config.inputFile2, proverRequest.aggregatedBatchProofInput2);
     }
     TimerStopAndLog(INPUT_LOAD);
 
     // Call the prover
-    prover.genAggregatedProof(&proverRequest);
+    prover.genAggregatedBatchProof(&proverRequest);
 }
 
 void runFileGenFinalProof(Goldilocks fr, Prover &prover, Config &config)
@@ -264,7 +264,7 @@ void runFileExecute(Goldilocks fr, Prover &prover, Config &config)
     // Load and parse input JSON file
     TimerStart(INPUT_LOAD);
     // Create and init an empty prover request
-    ProverRequest proverRequest(fr, config, prt_execute);
+    ProverRequest proverRequest(fr, config, prt_executeBatch);
     if (config.inputFile.size() > 0)
     {
         json inputJson;
@@ -287,7 +287,7 @@ void runFileExecute(Goldilocks fr, Prover &prover, Config &config)
     }
 
     // Call the prover
-    prover.execute(&proverRequest);
+    prover.executeBatch(&proverRequest);
 }
 
 int main(int argc, char **argv)
@@ -631,13 +631,13 @@ int main(int argc, char **argv)
                 tmpConfig.inputFile = config.inputFile + files[i];
                 zklog.info("runFileGenAggregatedProof inputFile=" + tmpConfig.inputFile);
                 // Call the prover
-                runFileGenAggregatedProof(fr, prover, tmpConfig);
+                runFileGenAggregatedBatchProof(fr, prover, tmpConfig);
             }
         }
         else
         {
             // Call the prover
-            runFileGenAggregatedProof(fr, prover, config);
+            runFileGenAggregatedBatchProof(fr, prover, config);
         }
     }
 

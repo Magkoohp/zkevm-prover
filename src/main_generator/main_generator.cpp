@@ -306,7 +306,12 @@ string generate(const json &rom, uint64_t forkID, string forkNamespace, const st
     if (forkID < 8)
         code += "    int64_t i64Aux;\n";
     //code += "    int64_t incHashPos = 0;\n"; // TODO: Remove initialization to check it is initialized before being used
-    code += "    Rom &rom = mainExecutor.rom;\n";
+    
+    if (forkID >=9)
+        code += "    Rom &rom = config.loadCollectionRom ? mainExecutor.romCollection : mainExecutor.romBatch;\n";
+    else
+        code += "    Rom &rom = mainExecutor.rom;\n";
+
     code += "    Goldilocks &fr = mainExecutor.fr;\n";
     code += "    uint64_t flushId;\n";
     code += "    uint64_t lastSentFlushId;\n";
@@ -335,7 +340,7 @@ string generate(const json &rom, uint64_t forkID, string forkNamespace, const st
     code += "        return;\n";
     code += "    }\n\n";
 
-    code += "    Context ctx(mainExecutor.fr, mainExecutor.config, mainExecutor.fec, mainExecutor.fnec, pols, mainExecutor.rom, proverRequest, mainExecutor.pHashDB);\n\n";
+    code += "    Context ctx(mainExecutor.fr, mainExecutor.config, mainExecutor.fec, mainExecutor.fnec, pols, rom, proverRequest, mainExecutor.pHashDB);\n\n";
 
     code += "    mainExecutor.initState(ctx);\n\n";
 
@@ -1005,7 +1010,7 @@ string generate(const json &rom, uint64_t forkID, string forkNamespace, const st
             {
                 code += "    // If addrRel is possitive, and the sum is too big, fail\n";
 
-                if (forkNamespace == "fork_4")
+                if (forkID == 4)
                 {
 
                     code += "    if (proverRequest.input.publicInputsExtended.publicInputs.oldBatchNum > 382000)\n";
@@ -1033,7 +1038,10 @@ string generate(const json &rom, uint64_t forkID, string forkNamespace, const st
                 }
                 else
                 {
-                    code += "    if ( addrRel >= " + to_string( ( (rom["program"][zkPC].contains("isMem") && (rom["program"][zkPC]["isMem"]  == 1) ) ? 0x20000 : 0x10000 ) - 2048 ) + ")\n";
+                    if (forkID < 9)
+                        code += "    if ( addrRel >= " + to_string( ( (rom["program"][zkPC].contains("isMem") && (rom["program"][zkPC]["isMem"]  == 1) ) ? 0x20000 : 0x10000 ) - 2048 ) + ")\n";
+                    else
+                        code += "    if ( addrRel >= " + to_string( (rom["program"][zkPC].contains("isMem") && (rom["program"][zkPC]["isMem"]  == 1) ) ? 0x20000 : 0x10000 ) + ")\n";
                     code += "    {\n";
                     code += "        proverRequest.result = ZKR_SM_MAIN_ADDRESS_OUT_OF_RANGE;\n";
                     code += "        zkPC=" + to_string(zkPC) +";\n";
@@ -6498,7 +6506,7 @@ string setter8 (const string &reg, bool setReg, bool bFastMode, uint64_t zkPC, c
         }
         code += "\n";
     }
-    else if ((forkID >= 7) && rom["labels"].contains("verifyMerkleProofEnd") && (zkPC == rom["labels"]["verifyMerkleProofEnd"]) && (reg=="C"))
+    else if ((forkID >= 7) && (forkID <=8) && rom["labels"].contains("verifyMerkleProofEnd") && (zkPC == rom["labels"]["verifyMerkleProofEnd"]) && (reg=="C"))
     {
         code += "    if (proverRequest.input.bSkipVerifyL1InfoRoot)\n";
         code += "    {\n";
