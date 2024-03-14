@@ -8,6 +8,10 @@
 #include "main.hpp"
 #include "main.recursive1.hpp"
 #include "main.recursive2.hpp"
+#include "main.blob_inner.hpp"
+#include "main.blob_inner_recursive1.hpp"
+#include "main.blob_outer.hpp"
+#include "main.blob_outer_recursive2.hpp"
 #include "main.recursiveF.hpp"
 #include "main.final.hpp"
 #include "binfile_utils.hpp"
@@ -29,6 +33,11 @@
 #include "C12aSteps.hpp"
 #include "Recursive1Steps.hpp"
 #include "Recursive2Steps.hpp"
+#include "BlobInnerSteps.hpp"
+#include "BlobInnerCompressorSteps.hpp"
+#include "BlobInnerRecursive1Steps.hpp"
+#include "BlobOuterSteps.hpp"
+#include "BlobOuterRecursive2Steps.hpp"
 #include "chelpers_steps.hpp"
 #include "zklog.hpp"
 #include "exit_process.hpp"
@@ -973,7 +982,7 @@ void Prover::genBlobInnerProof (ProverRequest *pProverRequest){
         TimerStopAndLog(STARK_JSON_GENERATION_BLOB_INNER_PROOF);
 
         CommitPolsStarks cmPolsCompressor(pAddress, (1 << starkBlobInnerCompressor->starkInfo.starkStruct.nBits), starkBlobInnerCompressor->starkInfo.nCm1);
-        Circom::getCommitedPols(&cmPolsCompressor, config.blobInnerVerifier, config.blobInnerCompressorExec, zkin, (1 << starkBlobInnerCompressor->starkInfo.starkStruct.nBits), starkBlobInnerCompressor->starkInfo.nCm1);
+        CircomBlobInner::getCommitedPols(&cmPolsCompressor, config.blobInnerVerifier, config.blobInnerCompressorExec, zkin, (1 << starkBlobInnerCompressor->starkInfo.starkStruct.nBits), starkBlobInnerCompressor->starkInfo.nCm1);
 
         // void *pointerCmCompressorPols = mapFile("config/blob_inner_compressor/blob_inner_compressor.commit", cmPolsCompressor.size(), true);
         // memcpy(pointerCmCompressorPols, cmPolsCompressor.address(), cmPolsCompressor.size());
@@ -1001,7 +1010,7 @@ void Prover::genBlobInnerProof (ProverRequest *pProverRequest){
         TimerStopAndLog(STARK_JSON_GENERATION_BLOB_INNER_PROOF_COMPRESSOR);
 
         CommitPolsStarks cmPolsRecursive1(pAddress, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
-        CircomRecursive1::getCommitedPols(&cmPolsRecursive1, config.blobInnerRecursive1Verifier, config.blobInnerRecursive1Exec, zkinCompressor, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
+        CircomBlobInnerCompressor::getCommitedPols(&cmPolsRecursive1, config.blobInnerRecursive1Verifier, config.blobInnerRecursive1Exec, zkinCompressor, (1 << starkBlobInnerRecursive1->starkInfo.starkStruct.nBits), starkBlobInnerRecursive1->starkInfo.nCm1);
 
         // void *pointerCmRecursive1Pols = mapFile("config/blob_inner_recursive1/blob_inner_recursive1.commit", cmPolsRecursive1.size(), true);
         // memcpy(pointerCmRecursive1Pols, cmPolsRecursive1.address(), cmPolsRecursive1.size());
@@ -1092,8 +1101,7 @@ void Prover::genBlobOuterProof (ProverRequest *pProverRequest){
     }
 
     CommitPolsStarks cmPolsBlobOuter(pAddress, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
-    //note: this must be changed by CircomBlobOuter::getCommitedPols
-    CircomRecursive2::getCommitedPols(&cmPolsBlobOuter, config.blobOuterVerifier, config.blobOuterExec, zkinInputBlobOuter, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
+    CircomBlobOuter::getCommitedPols(&cmPolsBlobOuter, config.blobOuterVerifier, config.blobOuterExec, zkinInputBlobOuter, (1 << starkBlobOuter->starkInfo.starkStruct.nBits), starkBlobOuter->starkInfo.nCm1);
 
     // void *pointerCmBlobOuterPols = mapFile("config/blob_outer/blob_outer.commit", cmPolsBlobOuter.size(), true);
     // memcpy(pointerCmBlobOuterPols, cmPolsBlobOuter.address(), cmPolsBlobOuter.size());
@@ -1398,7 +1406,7 @@ void Prover::genAggregatedBlobOuterProof (ProverRequest *pProverRequest){
     }
 
     CommitPolsStarks cmPolsRecursive2(pAddress, (1 << starkBlobOuterRecursive2->starkInfo.starkStruct.nBits), starkBlobOuterRecursive2->starkInfo.nCm1);
-    CircomRecursive2::getCommitedPols(&cmPolsRecursive2, config.blobOuterRecursive2Verkey, config.blobOuterRecursive2Exec, zkinInputRecursive2, (1 << starkBlobOuterRecursive2->starkInfo.starkStruct.nBits), starkBlobOuterRecursive2->starkInfo.nCm1);
+    CircomBlobOuterRecursive2::getCommitedPols(&cmPolsRecursive2, config.blobOuterRecursive2Verkey, config.blobOuterRecursive2Exec, zkinInputRecursive2, (1 << starkBlobOuterRecursive2->starkInfo.starkStruct.nBits), starkBlobOuterRecursive2->starkInfo.nCm1);
 
     // void *pointerCmRecursive2Pols = mapFile("config/blob_outer_recursive2/blob_outer_recursive2.commit", cmPolsRecursive2.size(), true);
     // memcpy(pointerCmRecursive2Pols, cmPolsRecursive2.address(), cmPolsRecursive2.size());
